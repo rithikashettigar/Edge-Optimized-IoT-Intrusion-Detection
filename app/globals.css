@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: oklch(0.16 0.015 250);
+  --color-foreground: oklch(0.95 0.01 250);
+
+  --color-surface: oklch(0.21 0.018 255);
+  --color-surface-muted: oklch(0.26 0.02 255);
+  --color-border-subtle: oklch(0.32 0.02 255);
+
+  --color-cyan: oklch(0.78 0.15 195);
+  --color-cyan-dim: oklch(0.55 0.12 195);
+  --color-emerald: oklch(0.78 0.17 160);
+  --color-emerald-dim: oklch(0.55 0.13 160);
+  --color-amber: oklch(0.82 0.15 75);
+  --color-amber-dim: oklch(0.62 0.13 75);
+  --color-rose: oklch(0.7 0.19 20);
+
+  --color-muted-foreground: oklch(0.62 0.02 255);
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", "Menlo", monospace;
+}
+
+* {
+  border-color: var(--color-border-subtle);
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.3 0.06 200 / 0.28), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 10%, oklch(0.3 0.06 160 / 0.15), transparent);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.glass {
+  background: linear-gradient(180deg, oklch(0.24 0.02 255 / 0.7), oklch(0.19 0.018 255 / 0.6));
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(0.4 0.02 255 / 0.35);
+  box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.04) inset, 0 8px 30px -12px oklch(0 0 0 / 0.5);
+}
+
+.glass-hover {
+  transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.glass-hover:hover {
+  border-color: oklch(0.6 0.08 200 / 0.5);
+  box-shadow: 0 1px 0 0 oklch(1 0 0 / 0.06) inset, 0 12px 40px -12px oklch(0.6 0.1 200 / 0.25);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 currentColor; }
+  50% { opacity: 0.6; box-shadow: 0 0 0 6px transparent; }
+}
+.live-dot {
+  animation: pulse-dot 1.8s ease-in-out infinite;
+}
+
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(400%); }
+}
+
+.custom-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: oklch(0.4 0.02 255 / 0.5);
+  border-radius: 999px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.5 0.04 200 / 0.6);
+}
