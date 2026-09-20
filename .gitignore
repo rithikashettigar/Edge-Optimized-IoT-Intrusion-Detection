@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.py[cod]
+# Leading slash anchors these to the repo root, so the src/edge_ids/data and
+# tests/data packages are not swept up by the dataset ignore.
+/data/
+/artifacts/
+.pytest_cache/
+*.egg-info/
+.ipynb_checkpoints/

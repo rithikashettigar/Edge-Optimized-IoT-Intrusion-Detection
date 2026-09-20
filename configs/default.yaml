@@ -1,0 +1,72 @@
+# Every hyperparameter for a run, in one place. Values mirror the defaults in
+# src/edge_ids/config.py so a run is reproducible from this file alone.
+
+artifacts_dir: artifacts
+
+data:
+  # CSE-CIC-IDS2018: processed CSVs live in a public S3 bucket and download
+  # directly. The CIC-IDS2017 host now gates every path behind a form, so
+  # source: ids2017 generally requires fetching the archive by hand.
+  source: ids2018
+  files:
+    # Friday-02-03-2018 is the botnet capture - BENIGN plus Bot labels, which is
+    # exactly the binary problem this project targets. Add more days from
+    # IDS2018_DAYS in src/edge_ids/data/download.py for other attack families.
+    - Friday-02-03-2018_TrafficForML_CICFlowMeter.csv
+  url: "http://cicresearch.ca/CICDataset/CIC-IDS-2017/Dataset/CIC-IDS-2017/CSVs/MachineLearningCSV.zip"
+  # One directory per experiment: the loader recurses, so two datasets sharing a
+  # raw_dir would be silently concatenated into one run.
+  raw_dir: data/botnet
+  processed_dir: data/processed
+  # Identifier columns dropped before training - see spec section 3, "Leakage prevention".
+  drop_columns:
+    - Flow ID
+    - Source IP
+    - Src IP
+    - Source Port
+    - Src Port
+    - Destination IP
+    - Dst IP
+    - Destination Port
+    - Dst Port
+    - Timestamp
+  val_size: 0.2
+  test_size: 0.2
+  clip: 5.0          # scaled features clipped to [-clip, clip] so outliers do not
+                     # dominate the INT8 quantization range
+  sample_frac: 1.0
+  seed: 42
+
+teacher:
+  hidden: [512, 256, 128, 64]
+  dropout: 0.3
+  lr: 0.001
+  batch_size: 1024
+  max_epochs: 40
+  patience: 5
+
+student:
+  hidden: [32, 16]
+  lr: 0.001
+  batch_size: 1024
+  max_epochs: 60
+  patience: 8
+
+distill:
+  temperature: 4.0
+  alpha: 0.7
+
+prune:
+  total_amount: 0.5
+  iterations: 3
+  finetune_epochs: 5
+  min_neurons: 4
+
+quantize:
+  backend: auto      # fbgemm -> onednn -> qnnpack, whichever this torch build has
+  calibration_batches: 200
+
+benchmark:
+  warmup: 100
+  iterations: 1000
+  threads: 1         # one router core, not a laptop's full parallelism

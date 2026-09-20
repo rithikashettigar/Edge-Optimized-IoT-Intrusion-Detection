@@ -1,0 +1,72 @@
+# Infiltration experiment.
+#
+# Why this exists: on the botnet capture every model reached ROC-AUC 1.0000, so
+# the plain student matched the distilled one and knowledge distillation had
+# nothing to demonstrate - there were no ambiguous cases whose soft labels could
+# carry information a hard label does not.
+#
+# Infiltration is the hardest class in CSE-CIC-IDS2018; published F1 scores sit
+# far below the botnet day's. If distillation helps anywhere in this dataset, it
+# helps here. Running the identical pipeline on both gives a two-point
+# comparison across task difficulty rather than a single saturated result.
+
+artifacts_dir: artifacts/infiltration
+
+data:
+  source: ids2018
+  files:
+    - Thursday-01-03-2018_TrafficForML_CICFlowMeter.csv
+  url: "http://cicresearch.ca/CICDataset/CIC-IDS-2017/Dataset/CIC-IDS-2017/CSVs/MachineLearningCSV.zip"
+  raw_dir: data/infiltration
+  drop_columns:
+    - Flow ID
+    - Source IP
+    - Src IP
+    - Source Port
+    - Src Port
+    - Destination IP
+    - Dst IP
+    - Destination Port
+    - Dst Port
+    - Timestamp
+  val_size: 0.2
+  test_size: 0.2
+  clip: 5.0
+  sample_frac: 1.0
+  seed: 42
+
+# Identical to the botnet run, so any difference in outcome is attributable to
+# the task rather than to the configuration.
+teacher:
+  hidden: [512, 256, 128, 64]
+  dropout: 0.3
+  lr: 0.001
+  batch_size: 1024
+  max_epochs: 40
+  patience: 5
+
+student:
+  hidden: [32, 16]
+  lr: 0.001
+  batch_size: 1024
+  max_epochs: 60
+  patience: 8
+
+distill:
+  temperature: 4.0
+  alpha: 0.7
+
+prune:
+  total_amount: 0.5
+  iterations: 3
+  finetune_epochs: 5
+  min_neurons: 4
+
+quantize:
+  backend: auto
+  calibration_batches: 200
+
+benchmark:
+  warmup: 100
+  iterations: 1000
+  threads: 1
